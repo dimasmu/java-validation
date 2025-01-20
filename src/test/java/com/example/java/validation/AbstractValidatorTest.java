@@ -1,0 +1,71 @@
+package com.example.java.validation;
+
+import com.example.java.validation.payload.EmailErrorPayload;
+import jakarta.validation.*;
+import jakarta.validation.executable.ExecutableValidator;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+
+import java.util.Set;
+
+public abstract class AbstractValidatorTest {
+
+    protected ValidatorFactory validatorFactory;
+
+    protected Validator validator;
+
+    protected ExecutableValidator executableValidator;
+
+    @BeforeEach
+    void setUp() {
+
+        validatorFactory = Validation.buildDefaultValidatorFactory();
+        validator = validatorFactory.getValidator();
+        executableValidator = validator.forExecutables();
+
+    }
+
+    @AfterEach
+    void tearDown() {
+        validatorFactory.close();
+    }
+
+    void validate(Object o) {
+        Set<ConstraintViolation<Object>> violations = validator.validate(o);
+        for (ConstraintViolation<Object> violation : violations) {
+            System.out.println(violation.getMessage());
+            System.out.println(violation.getPropertyPath().toString());
+            System.out.println("===============================================");
+        }
+    }
+
+    void validateWithGroup(Object o, Class<?>... groups) {
+        Set<ConstraintViolation<Object>> violations = validator.validate(o, groups);
+        for (ConstraintViolation<Object> violation : violations) {
+            System.out.println(violation.getMessage());
+            System.out.println(violation.getPropertyPath().toString());
+            System.out.println("===============================================");
+        }
+    }
+
+    void validateWithPayload(Object o, Class<?>... groups) {
+        Set<ConstraintViolation<Object>> violations = validator.validate(o, groups);
+        for (ConstraintViolation<Object> violation : violations) {
+            System.out.println(violation.getMessage());
+
+//            violation.getConstraintDescriptor().getPayload().var;
+
+            Set<Class<? extends Payload>> payload = violation.getConstraintDescriptor().getPayload();
+            for (Class<? extends Payload> payloadClass : payload) {
+                if (payloadClass == EmailErrorPayload.class) {
+                    EmailErrorPayload emailErrorPayload = new EmailErrorPayload();
+                    emailErrorPayload.sendEmail(violation);
+                }
+            }
+
+            System.out.println(violation.getPropertyPath().toString());
+            System.out.println("===============================================");
+        }
+    }
+
+}
