@@ -47,6 +47,20 @@ public class Person {
         System.out.println("Hello " + name + ", my name is" + firstName);
     }
 
+    @Valid
+    public Person() {
+
+    }
+
+    @Valid
+    public Person(@NotBlank(message = "first name can not blank") String firstName,
+                  @NotBlank(message = "last name can not blank") String lastName,
+                  @NotBlank(message = "address can not blank") @Valid Address address) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.address = address;
+    }
+
     @NotBlank(message = "full name can not blank")
     public String fullName() {
         return firstName + " " + lastName;

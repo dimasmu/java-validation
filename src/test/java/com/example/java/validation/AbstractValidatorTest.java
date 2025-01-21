@@ -16,12 +16,15 @@ public abstract class AbstractValidatorTest {
 
     protected ExecutableValidator executableValidator;
 
+    protected MessageInterpolator messageInterpolator;
+
     @BeforeEach
     void setUp() {
 
         validatorFactory = Validation.buildDefaultValidatorFactory();
         validator = validatorFactory.getValidator();
         executableValidator = validator.forExecutables();
+        messageInterpolator = validatorFactory.getMessageInterpolator();
 
     }
 
