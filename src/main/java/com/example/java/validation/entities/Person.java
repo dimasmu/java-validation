@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.util.List;
+
 public class Person {
 
     @Size(max = 20, message = "First name length max must 20 character")
@@ -18,6 +20,8 @@ public class Person {
     @NotNull(message = "Address can not null")
     @Valid // anotasi untuk meminta validasi ke dalam objek / nested validation
     private Address address;
+
+    private List<@NotBlank(message = "hobbies can not blank") String> hobbies;
 
     public String getFirstName() {
         return firstName;
@@ -64,5 +68,13 @@ public class Person {
     @NotBlank(message = "full name can not blank")
     public String fullName() {
         return firstName + " " + lastName;
+    }
+
+    public List<@NotBlank(message = "hobbies can not blank") String> getHobbies() {
+        return hobbies;
+    }
+
+    public void setHobbies(List<@NotBlank(message = "hobbies can not blank") String> hobbies) {
+        this.hobbies = hobbies;
     }
 }

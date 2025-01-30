@@ -1,5 +1,9 @@
 package com.example.java.validation;
 
+import com.example.java.validation.extractor.DataIntegerValueExtractor;
+import com.example.java.validation.extractor.DataValueExtractor;
+import com.example.java.validation.extractor.EntryValueExtractorKey;
+import com.example.java.validation.extractor.EntryValueExtractorValue;
 import com.example.java.validation.payload.EmailErrorPayload;
 import jakarta.validation.*;
 import jakarta.validation.executable.ExecutableValidator;
@@ -21,7 +25,13 @@ public abstract class AbstractValidatorTest {
     @BeforeEach
     void setUp() {
 
-        validatorFactory = Validation.buildDefaultValidatorFactory();
+//        validatorFactory = Validation.buildDefaultValidatorFactory();
+        validatorFactory = Validation.byDefaultProvider().configure()
+                .addValueExtractor(new DataValueExtractor())
+                .addValueExtractor(new EntryValueExtractorKey())
+                .addValueExtractor(new EntryValueExtractorValue())
+                .addValueExtractor(new DataIntegerValueExtractor())
+                .buildValidatorFactory();
         validator = validatorFactory.getValidator();
         executableValidator = validator.forExecutables();
         messageInterpolator = validatorFactory.getMessageInterpolator();
@@ -39,6 +49,13 @@ public abstract class AbstractValidatorTest {
             System.out.println(violation.getMessage());
             System.out.println(violation.getPropertyPath().toString());
             System.out.println("===============================================");
+        }
+    }
+
+    void validateWithException(Object o) {
+        Set<ConstraintViolation<Object>> violations = validator.validate(o);
+        if (!violations.isEmpty()) {
+            throw new ConstraintViolationException(violations);
         }
     }
 
